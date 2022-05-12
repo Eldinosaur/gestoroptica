@@ -1,11 +1,12 @@
-<ul ngbNav #nav="ngbNav" class="nav-tabs">
-  <li [ngbNavItem]="1">
-    <a ngbNavLink>One</a>
-  </li>
-  <li [ngbNavItem]="2">
-    <a ngbNavLink>Two</a>
-  </li>
-  <li [ngbNavItem]="3">
-    <a ngbNavLink>Three</a>
-  </li>
-</ul>
+<div class="row">
+  <div class="col">
+    <div ngbDropdown class="d-inline-block">
+      <button type="button" class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>
+        <img src="/assets/img/avatar.svg" alt="">
+        Usuario</button>
+      <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+        <button ngbDropdownItem>
+          <img src="/assets/icons/logout.svg" alt="">Cerrar sesion</button>
+      </div>
+    </div>
+  </div>
