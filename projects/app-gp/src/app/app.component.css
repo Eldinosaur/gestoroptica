@@ -1,0 +1,10 @@
+.menu{
+  width: 20%;
+  height: 655px;
+  background-color: lavender;
+  padding: 5px;
+  align-items: center;
+}
+.header{
+  background-color: gray;
+}

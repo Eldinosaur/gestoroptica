@@ -1,0 +1,18 @@
+.container{
+  width: 100vw;
+  height: 100vh;
+  background: lightblue;
+
+}
+.info{
+text-align: center;
+}
+.info h2{
+  font-size: 40px;
+  line-height: 46px;
+  text-align:center;
+}
+.info img{
+  max-width: 200px;
+}
+
