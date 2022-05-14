@@ -1,15 +1,19 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PageOptometraComponent } from './pages/page-optometra/page-optometra.component';
 
+import { OptometrasRoutingModule } from './optometras-routing.module';
+import { PageListComponent } from './pages/page-list/page-list.component';
+import { SharedModule } from '../shared/shared.module';
 
 
 @NgModule({
   declarations: [
-    PageOptometraComponent
+    PageListComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    OptometrasRoutingModule,
+    SharedModule
   ]
 })
 export class OptometrasModule { }

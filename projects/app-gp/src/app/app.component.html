@@ -1,12 +1,18 @@
-<nav ngbNav>
-  <div class="menu">
-    <div class="nombre">
-      <h4>Sistema Gestion Optica</h4>
+<div fxLayout class="container">
+  <div fxLayout="column" class="menu">
+    <div fxLayout fxFlex="1 1 20%" fxLayout>
+      <h3>
+        Sistema Gestion Optica
+      </h3>
     </div>
-    <gp-menu></gp-menu>
+    <div fxLayout fxFlex="1 1 50%">
+      <gp-menu></gp-menu>
+    </div>
+    <div fxLayout fxFlex="1 1 30%" fxLayoutAlign="center end">
+      <gp-user></gp-user>
+    </div>
   </div>
-  <div fxLayout fxLayoutAlign="end center" class="header">
-    <gp-header></gp-header>
+  <div fxLayout class="content">
+    <router-outlet></router-outlet>
   </div>
-</nav>
-<router-outlet></router-outlet>
+</div>

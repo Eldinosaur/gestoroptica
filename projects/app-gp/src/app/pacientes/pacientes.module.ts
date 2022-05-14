@@ -1,15 +1,19 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PagePacienteComponent } from './pages/page-paciente/page-paciente.component';
 
+import { PacientesRoutingModule } from './pacientes-routing.module';
+import { PageListComponent } from './pages/page-list/page-list.component';
+import { SharedModule } from '../shared/shared.module';
 
 
 @NgModule({
   declarations: [
-    PagePacienteComponent
+    PageListComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    PacientesRoutingModule,
+    SharedModule
   ]
 })
 export class PacientesModule { }

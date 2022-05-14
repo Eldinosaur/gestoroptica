@@ -1,19 +1,19 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { PageConsultaComponent } from './consultas/pages/page-consulta/page-consulta.component';
+import { ConsultasModule } from './consultas/consultas.module';
 import { PageLoginComponent } from './core/pages/page-login/page-login.component';
-import { PageOptometraComponent } from './optometras/pages/page-optometra/page-optometra.component';
-import { PagePacienteComponent } from './pacientes/pages/page-paciente/page-paciente.component';
-import { PageProductoComponent } from './productos/pages/page-producto/page-producto.component';
-import { PageVentaComponent } from './ventas/pages/page-venta/page-venta.component';
+import { OptometrasModule } from './optometras/optometras.module';
+import { PacientesModule } from './pacientes/pacientes.module';
+import { ProductosModule } from './productos/productos.module';
+import { VentasModule } from './ventas/ventas.module';
 
 const routes: Routes = [
   {path:'',component:PageLoginComponent},
-  {path:'consultas',component:PageConsultaComponent},
-  {path:'optometras',component:PageOptometraComponent},
-  {path:'pacientes',component:PagePacienteComponent},
-  {path:'productos', component: PageProductoComponent},
-  {path:'ventas', component:PageVentaComponent}
+  {path:'consultas',loadChildren:()=>import('./consultas/consultas.module').then((m)=>ConsultasModule)},
+  {path:'optometras',loadChildren:()=>import('./optometras/optometras.module').then((m)=>OptometrasModule)},
+  {path:'pacientes',loadChildren:()=>import('./pacientes/pacientes.module').then((m)=>PacientesModule)},
+  {path:'productos',loadChildren:()=>import('./productos/productos.module').then((m)=>ProductosModule)},
+  {path:'ventas',loadChildren:()=>import('./ventas/ventas.module').then((m)=>VentasModule)}
 ];
 
 @NgModule({
