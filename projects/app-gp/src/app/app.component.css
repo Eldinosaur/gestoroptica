@@ -1,16 +1,15 @@
-.container{
-  padding: 0%;
-}
+
 .menu{
-  width: 20vw;
-  height: 100vh;
   background-color: lavender;
-  padding: 2px;
 }
 .header{
   background-color: whitesmoke;
 }
 .content{
   background-color: beige;
-  width: 100vw;
+
+}
+h3{
+  padding-top: 15px;
+  text-align: center;
 }

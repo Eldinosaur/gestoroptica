@@ -1,18 +1,18 @@
 <div fxLayout class="container">
-  <div fxLayout="column" class="menu">
-    <div fxLayout fxFlex="1 1 20%" fxLayout>
+  <div fxLayout="column" fxlayoutAlign="center center" class="menu" fxFlex="1 1 20%">
+    <div fxLayout fxFlex="1 1 30%" fxLayout>
       <h3>
         Sistema Gestion Optica
       </h3>
     </div>
-    <div fxLayout fxFlex="1 1 50%">
+    <div fxLayout fxFlex="1 1 60%">
       <gp-menu></gp-menu>
     </div>
     <div fxLayout fxFlex="1 1 30%" fxLayoutAlign="center end">
       <gp-user></gp-user>
     </div>
   </div>
-  <div fxLayout class="content">
+  <div fxLayout class="content" fxFlex="1 1 50%">
     <router-outlet></router-outlet>
   </div>
 </div>
