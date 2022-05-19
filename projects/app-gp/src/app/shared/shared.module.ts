@@ -4,6 +4,12 @@ import { ContainerComponent } from './components/container/container.component';
 import { TitleComponent } from './components/title/title.component';
 import { TableComponent } from './components/table/table.component';
 
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatIconModule} from '@angular/material/icon';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import {MatCardModule} from '@angular/material/card';
+import {MatTableModule} from '@angular/material/table';
+
 
 
 @NgModule({
@@ -13,7 +19,12 @@ import { TableComponent } from './components/table/table.component';
     TableComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    MatToolbarModule,
+    MatIconModule,
+    FlexLayoutModule,
+    MatCardModule,
+    MatTableModule
   ],
   exports: [
     ContainerComponent,

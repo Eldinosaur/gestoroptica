@@ -27,6 +27,7 @@
               "projects/app-gp/src/assets"
             ],
             "styles": [
+              "projects/app-gp/src/custom-theme.scss",
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "projects/app-gp/src/styles.css"
             ],

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { IMenu, MenuService } from '../../../services/menu.service';
 
 @Component({
   selector: 'gp-title',
@@ -7,7 +9,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TitleComponent implements OnInit {
 
-  constructor() { }
+  path:IMenu
+  constructor(
+    private menuService:MenuService,
+    private activateRoute: ActivatedRoute) {
+      const currentPath = '/'+this.activateRoute.snapshot.pathFromRoot[1].routeConfig?.path
+      this.path = this.menuService.getMenuByUrl(currentPath)
+     }
 
   ngOnInit(): void {
   }
