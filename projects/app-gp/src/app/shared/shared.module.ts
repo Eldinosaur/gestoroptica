@@ -9,6 +9,10 @@ import {MatIconModule} from '@angular/material/icon';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import {MatCardModule} from '@angular/material/card';
 import {MatTableModule} from '@angular/material/table';
+import { PaginatorComponent } from './components/paginator/paginator.component';
+import { ConfirmComponent } from './components/confirm/confirm.component';
+import { DownloadComponent } from './components/download/download.component';
+import { KeypadButtonComponent } from './components/keypad-button/keypad-button.component';
 
 
 
@@ -16,7 +20,11 @@ import {MatTableModule} from '@angular/material/table';
   declarations: [
     ContainerComponent,
     TitleComponent,
-    TableComponent
+    TableComponent,
+    PaginatorComponent,
+    ConfirmComponent,
+    DownloadComponent,
+    KeypadButtonComponent
   ],
   imports: [
     CommonModule,
