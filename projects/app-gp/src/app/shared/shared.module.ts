@@ -21,6 +21,7 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
 import { MatListModule } from '@angular/material/list';
+import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG:PerfectScrollbarConfigInterface = {
   suppressScrollX:true
@@ -50,6 +51,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG:PerfectScrollbarConfigInterface = {
     MatTooltipModule,
     MatBottomSheetModule,
     MatListModule,
+    NgbPaginationModule
   ],
   exports: [
     ContainerComponent,
