@@ -1,4 +1,26 @@
 <gp-title></gp-title>
 <gp-container>
-    <gp-table [data]="data" [columns]="listFields"></gp-table>
+    <perfect-scrollbar class="heightMaxPerfectScrollbar">
+        <gp-table [data]="dataConsultas" [metaDataColumns]="metaDataColumns">
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let row" class="align-right">
+                  <button
+                      type="button"
+                      class="btn btn-primary"
+                      (click)="openForm(row)">
+                      Editar
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-danger"
+                        (click)="delete(row.id)"
+                      >Eliminar
+                    </button>
+                </td>
+            </ng-container>
+        </gp-table>
+    </perfect-scrollbar>
+    <gp-paginator (onChangePage)="changePage($event)" [length]="totalRecords"></gp-paginator>
 </gp-container>
+<gp-keypad-button [keypadButtons]="keypadButtons" (onClick)="doAction($event)"></gp-keypad-button>
