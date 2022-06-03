@@ -7,6 +7,8 @@ import { ConfirmComponent } from '../../../shared/components/confirm/confirm.com
 import { DownloadComponent } from '../../../shared/components/download/download.component';
 import { KeypadButton } from '../../../shared/interfaces/keybutton.interface';
 import { MetaDataColumn } from '../../../shared/interfaces/metacolumn.interface';
+import { FormComponent } from '../../components/form/form.component';
+import { ConsultaService } from '../../services/consulta.service';
 
 @Component({
   selector: 'gp-page-list',
@@ -14,7 +16,7 @@ import { MetaDataColumn } from '../../../shared/interfaces/metacolumn.interface'
   styleUrls: ['./page-list.component.css']
 })
 export class PageListComponent implements OnInit {
-  recordsConsultas:any[]=[
+  /*recordsConsultas:any[]=[
     {id:1,cedula:'1801',nombre:'Anahi',apellido:'Naranjo',fecha:'05-01-2020',diagnostico:'Miopia'},
     {id:2,cedula:'1802',nombre:'Angeles',apellido:'Lopez',fecha:'08-02-2020',diagnostico:'Astigmatismo'},
     {id:3,cedula:'1803',nombre:'Liz',apellido:'Lop',fecha:'23-04-2021',diagnostico:'Miopia'},
@@ -55,31 +57,33 @@ export class PageListComponent implements OnInit {
     {id:18,cedula:'1803',nombre:'Liz',apellido:'Lop',fecha:'23-04-2021',diagnostico:'Miopia'},
     {id:19,cedula:'1804',nombre:'Adriana',apellido:'Naranjo',fecha:'26-10-2021',diagnostico:'Hipermetropia'},
     {id:20,cedula:'1805',nombre:'Nicole',apellido:'Vaca',fecha:'03-03-2022',diagnostico:'Ojo vago'}
-  ]
+  ]*/
 
   //listFields:string[]=['id','cedula','nombre','apellido','fecha','diagnostico']
   metaDataColumns: MetaDataColumn[] = [
-    {field:"id", title:"ID"},
+    {field:"_id", title:"ID"},
     {field:"cedula", title:"CEDULA"},
     {field:"nombre", title:"NOMBRE"},
     {field:"apellido", title:"APELLIDO"},
     {field:"fecha", title:"FECHA"},
     {field:"diagnostico", title:"DIAGNOSTICO"},
   ]
+  recordsConsultas: any[]=[]
   dataConsultas:any[]=[]
-  totalRecords= this.recordsConsultas.length
+  //totalRecords= this.recordsConsultas.length
+  totalRecords=0
 
   keypadButtons:KeypadButton[]=[
-    {icon:"cloud_download", tooltip:"Exportar", color:"accent",action:"DOWNLOAD"},
     {icon:"add", tooltip:"Agregar", color:"primary",action:"NEW"}
   ]
 
   constructor(
     private dialog:MatDialog,
     private snackBar:MatSnackBar,
-    private bottomSheet:MatBottomSheet
+    private bottomSheet:MatBottomSheet,
+    private consultaService:ConsultaService
   ) {
-    this.changePage(0)
+    this.loadConsultas()
    }
 
   ngOnInit(): void {
@@ -92,6 +96,30 @@ export class PageListComponent implements OnInit {
   }
 
   openForm(row:any=null){
+    const options = {
+      panelClass: 'panel-container',
+      disableClose:true,
+      data:row
+    }
+    const reference: MatDialogRef<FormComponent> = this.dialog.open(FormComponent, options)
+
+    reference.afterClosed().subscribe((response) => {
+      if(!response){return}
+
+      if(response.id){
+        const consulta = {...response}
+        this.consultaService.updateConsulta(response.id, consulta).subscribe (()=>{
+          this.changePage(0)
+          this.showMessage('Registro Actualizado')
+        })
+      } else{
+        const consulta = {...response}
+        this.consultaService.addConsulta(consulta).subscribe(() =>{
+          this.changePage(0)
+          this.showMessage('Registro exitoso')
+        })
+      }
+    })
 
   }
 
@@ -116,18 +144,21 @@ export class PageListComponent implements OnInit {
   }
   doAction(action:string){
     switch(action){
-      case 'DOWNLOAD':
-        this.showBottomSheet("Lista de Agencias","agencias",this.recordsConsultas)
-        break
       case 'NEW':
         this.openForm()
         break
     }
   }
-
-  showBottomSheet(title:string, fileName:string, data:any){
-    this.bottomSheet.open(DownloadComponent)
-  }
+ loadConsultas(){
+   this.consultaService.loadConsultas().subscribe(data => {
+     this.recordsConsultas = data
+     console.log(data)
+     this.totalRecords = this.recordsConsultas.length
+     this.changePage(0)
+   },error =>{
+     console.log(error)
+   })
+ }
 
 
 
