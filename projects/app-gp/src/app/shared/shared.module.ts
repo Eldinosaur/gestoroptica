@@ -24,6 +24,7 @@ import { MatListModule } from '@angular/material/list';
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { ReactiveFormsModule } from '@angular/forms';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG:PerfectScrollbarConfigInterface = {
   suppressScrollX:true
@@ -73,7 +74,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG:PerfectScrollbarConfigInterface = {
     MatFormFieldModule,
     MatInputModule,
     MatToolbarModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    ReactiveFormsModule
   ],
   providers:[
     {provide:PERFECT_SCROLLBAR_CONFIG,

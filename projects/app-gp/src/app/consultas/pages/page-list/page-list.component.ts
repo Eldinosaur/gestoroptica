@@ -4,7 +4,6 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from 'projects/app-gp/src/environments/environment';
 import { ConfirmComponent } from '../../../shared/components/confirm/confirm.component';
-import { DownloadComponent } from '../../../shared/components/download/download.component';
 import { KeypadButton } from '../../../shared/interfaces/keybutton.interface';
 import { MetaDataColumn } from '../../../shared/interfaces/metacolumn.interface';
 import { FormComponent } from '../../components/form/form.component';
@@ -80,7 +79,6 @@ export class PageListComponent implements OnInit {
   constructor(
     private dialog:MatDialog,
     private snackBar:MatSnackBar,
-    private bottomSheet:MatBottomSheet,
     private consultaService:ConsultaService
   ) {
     this.loadConsultas()

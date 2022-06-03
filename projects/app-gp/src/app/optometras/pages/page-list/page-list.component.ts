@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from 'projects/app-gp/src/environments/environment';
 import { ConfirmComponent } from '../../../shared/components/confirm/confirm.component';
-import { DownloadComponent } from '../../../shared/components/download/download.component';
 import { KeypadButton } from '../../../shared/interfaces/keybutton.interface';
 import { MetaDataColumn } from '../../../shared/interfaces/metacolumn.interface';
+import { FormComponent } from '../../components/form/form.component';
+import { OptometraService } from '../../services/optometra.service';
 
 @Component({
   selector: 'gp-page-list',
@@ -14,35 +14,30 @@ import { MetaDataColumn } from '../../../shared/interfaces/metacolumn.interface'
   styleUrls: ['./page-list.component.css']
 })
 export class PageListComponent implements OnInit {
-  recordsOptometras:any[]=[
-    {cedula:'1701',nombre:'Karina',apellido:'Lopez',correo:'klopez@example.com'},
-    {cedula:'1702',nombre:'Johan',apellido:'Curicho',correo:'jcuricho@example.com'},
-    {cedula:'1703',nombre:'Marco',apellido:'Araujo',correo:'maraujo@example.com'},
-    {cedula:'1704',nombre:'Paola',apellido:'Egüez',correo:'peguez@example.com'},
-    {cedula:'1705',nombre:'Aylin',apellido:'Gomez',correo:'agomez@example.com'}
-  ]
+  recordsOptometras:any[]=[]
   //listFields:string[]=['cedula','nombre','apellido','correo']
 
   metaDataColumns: MetaDataColumn[] = [
+    {field:"_id",title:"ID"},
     {field:"cedula", title:"Cedula"},
     {field:"nombre", title:"Nombre"},
     {field:"apellido", title:"Apellido"},
     {field:"correo", title:"Correo Electrónico"}
   ]
   dataOptometras:any[]=[]
-  totalRecords= this.recordsOptometras.length
+  //totalRecords= this.recordsOptometras.length
+  totalRecords = 0
 
   keypadButtons:KeypadButton[]=[
-    {icon:"cloud_download", tooltip:"Exportar", color:"accent",action:"DOWNLOAD"},
     {icon:"add", tooltip:"Agregar", color:"primary",action:"NEW"}
   ]
 
   constructor(
     private dialog:MatDialog,
     private snackBar:MatSnackBar,
-    private bottomSheet:MatBottomSheet
+    private optometraService:OptometraService
   ) {
-    this.changePage(0)
+    this.loadOptometras()
    }
 
   ngOnInit(): void {
@@ -55,6 +50,33 @@ export class PageListComponent implements OnInit {
   }
 
   openForm(row:any=null){
+    const options = {
+      panelClass: 'panel-container',
+      disableClose:true,
+      data:row
+    }
+    const reference: MatDialogRef<FormComponent> = this.dialog.open(FormComponent, options)
+
+    reference.afterClosed().subscribe((response) => {
+      if(!response){return}
+
+      if(response.id){
+        const  optometra= {...response}
+        this.optometraService.updateOptometra(response.id, optometra).subscribe (()=>{
+          this.changePage(0)
+          location.reload()
+          this.showMessage('Registro Actualizado')
+        })
+      } else{
+        const optometra = {...response}
+        this.optometraService.addOptometra(optometra).subscribe(() =>{
+          this.changePage(0)
+          location.reload()
+          this.showMessage('Registro exitoso')
+
+        })
+      }
+    })
 
   }
 
@@ -63,7 +85,7 @@ export class PageListComponent implements OnInit {
       ConfirmComponent,
       {width:"320px",disableClose:true})
 
-    reference.componentInstance.message="¿Está seguro de eliminar la Consulta?"
+    reference.componentInstance.message="¿Está seguro de eliminar la optometra?"
     reference.afterClosed().subscribe((result) => {
       if(!result){return}
       const position = this.recordsOptometras.findIndex(el => el.id === id)
@@ -79,17 +101,20 @@ export class PageListComponent implements OnInit {
   }
   doAction(action:string){
     switch(action){
-      case 'DOWNLOAD':
-        this.showBottomSheet("Lista de Agencias","agencias",this.recordsOptometras)
-        break
       case 'NEW':
         this.openForm()
         break
     }
   }
+  loadOptometras(){
+    this.optometraService.loadOptometras().subscribe(data => {
+      this.recordsOptometras = data
+      console.log(data)
+      this.totalRecords = this.recordsOptometras.length
+      this.changePage(0)
+    },error =>{
+      console.log(error)
+    })
 
-  showBottomSheet(title:string, fileName:string, data:any){
-    this.bottomSheet.open(DownloadComponent)
-  }
 
-}
+  }}
