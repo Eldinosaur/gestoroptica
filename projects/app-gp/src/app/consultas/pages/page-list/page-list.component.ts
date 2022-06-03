@@ -110,23 +110,27 @@ export class PageListComponent implements OnInit {
         const consulta = {...response}
         this.consultaService.updateConsulta(response.id, consulta).subscribe (()=>{
           this.changePage(0)
+          location.reload()
           this.showMessage('Registro Actualizado')
         })
       } else{
         const consulta = {...response}
         this.consultaService.addConsulta(consulta).subscribe(() =>{
           this.changePage(0)
+          location.reload()
           this.showMessage('Registro exitoso')
+
         })
       }
     })
+
 
   }
 
   delete(id:number){
     const reference:MatDialogRef<ConfirmComponent> = this.dialog.open(
       ConfirmComponent,
-      {width:"320px",disableClose:true})
+      {width:"420px",disableClose:true})
 
     reference.componentInstance.message="¿Está seguro de eliminar la Consulta?"
     reference.afterClosed().subscribe((result) => {
