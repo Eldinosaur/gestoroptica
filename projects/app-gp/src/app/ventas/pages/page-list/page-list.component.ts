@@ -7,6 +7,8 @@ import { ConfirmComponent } from '../../../shared/components/confirm/confirm.com
 import { DownloadComponent } from '../../../shared/components/download/download.component';
 import { KeypadButton } from '../../../shared/interfaces/keybutton.interface';
 import { MetaDataColumn } from '../../../shared/interfaces/metacolumn.interface';
+import { FormComponent } from '../../components/form/form.component';
+import { VentaService } from '../../services/venta.service';
 
 @Component({
   selector: 'gp-page-list',
@@ -14,39 +16,31 @@ import { MetaDataColumn } from '../../../shared/interfaces/metacolumn.interface'
   styleUrls: ['./page-list.component.css']
 })
 export class PageListComponent implements OnInit {
-  recordsVentas:any[]=[
-    {id:1,cedula:'1801',nombre:'Anahi',apellido:'Naranjo',fecha:'05-01-2020',descripcion:'Atencion en consultorio',monto:30},
-    {id:2,cedula:'1802',nombre:'Angeles',apellido:'Lopez',fecha:'08-02-2020',descripcion:'Atencion en consultorio',monto:30},
-    {id:3,cedula:'1803',nombre:'Liz',apellido:'Lop',fecha:'23-04-2021',descripcion:'Atencion en consultorio',monto:30},
-    {id:4,cedula:'1804',nombre:'Adriana',apellido:'Naranjo',fecha:'26-10-2021',descripcion:'Atencion en consultorio',monto:30},
-    {id:5,cedula:'1805',nombre:'Nicole',apellido:'Vaca',fecha:'03-03-2022',descripcion:'Atencion en consultorio',monto:30}
-  ]
+  recordsVentas:any[]=[]
   //listFields:string[]=['id','cedula','nombre','apellido','fecha','descripcion','monto']
 
   metaDataColumns: MetaDataColumn[] = [
-    {field:"id", title:"ID"},
     {field:"cedula", title:"Cedula"},
     {field:"nombre", title:"Nombre"},
     {field:"apellido", title:"Apellido"},
-    {field:"fecha", title:"Fecha Venta"},
+    {field:"fechaventa", title:"Fecha Venta"},
     {field:"descripcion", title:"Descripcion"},
     {field:"monto", title:"Monto de la Venta"},
 
   ]
   dataVentas:any[]=[]
-  totalRecords= this.recordsVentas.length
+  totalRecords= 0
 
   keypadButtons:KeypadButton[]=[
-    {icon:"cloud_download", tooltip:"Exportar", color:"accent",action:"DOWNLOAD"},
-    {icon:"add", tooltip:"Agregar", color:"primary",action:"NEW"}
+   {icon:"add", tooltip:"Agregar", color:"primary",action:"NEW"}
   ]
 
   constructor(
     private dialog:MatDialog,
     private snackBar:MatSnackBar,
-    private bottomSheet:MatBottomSheet
+    private ventaService:VentaService
   ) {
-    this.changePage(0)
+    this.loadVentas()
    }
 
   ngOnInit(): void {
@@ -59,7 +53,33 @@ export class PageListComponent implements OnInit {
   }
 
   openForm(row:any=null){
+    const options = {
+      panelClass: 'panel-container',
+      disableClose:true,
+      data:row
+    }
+    const reference: MatDialogRef<FormComponent> = this.dialog.open(FormComponent, options)
 
+    reference.afterClosed().subscribe((response) => {
+      if(!response){return}
+
+      if(response.id){
+        const venta = {...response}
+        this.ventaService.updateVenta(response.id, venta).subscribe (()=>{
+          this.changePage(0)
+          location.reload()
+          this.showMessage('Registro Actualizado')
+        })
+      } else{
+        const venta = {...response}
+        this.ventaService.addVenta(venta).subscribe(() =>{
+          this.changePage(0)
+          location.reload()
+          this.showMessage('Registro exitoso')
+
+        })
+      }
+    })
   }
 
   delete(id:number){
@@ -67,7 +87,7 @@ export class PageListComponent implements OnInit {
       ConfirmComponent,
       {width:"320px",disableClose:true})
 
-    reference.componentInstance.message="¿Está seguro de eliminar la Consulta?"
+    reference.componentInstance.message="¿Está seguro de eliminar la venta?"
     reference.afterClosed().subscribe((result) => {
       if(!result){return}
       const position = this.recordsVentas.findIndex(el => el.id === id)
@@ -83,17 +103,21 @@ export class PageListComponent implements OnInit {
   }
   doAction(action:string){
     switch(action){
-      case 'DOWNLOAD':
-        this.showBottomSheet("Lista de Agencias","agencias",this.recordsVentas)
-        break
       case 'NEW':
         this.openForm()
         break
     }
   }
-
-  showBottomSheet(title:string, fileName:string, data:any){
-    this.bottomSheet.open(DownloadComponent)
+  loadVentas(){
+    this.ventaService.loadVentas().subscribe(data => {
+      this.recordsVentas = data
+      console.log(data)
+      this.totalRecords = this.recordsVentas.length
+      this.changePage(0)
+    },error =>{
+      console.log(error)
+    })
   }
+
 
 }

@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from 'projects/app-gp/src/environments/environment';
 import { ConfirmComponent } from '../../../shared/components/confirm/confirm.component';
-import { DownloadComponent } from '../../../shared/components/download/download.component';
 import { KeypadButton } from '../../../shared/interfaces/keybutton.interface';
 import { MetaDataColumn } from '../../../shared/interfaces/metacolumn.interface';
+import { FormComponent } from '../../components/form/form.component';
+import { ProductoService } from '../../services/producto.service';
 
 @Component({
   selector: 'gp-page-list',
@@ -14,13 +14,7 @@ import { MetaDataColumn } from '../../../shared/interfaces/metacolumn.interface'
   styleUrls: ['./page-list.component.css']
 })
 export class PageListComponent implements OnInit {
-  recordsProductos:any[]=[
-    {codigo:'0102',nombre:'Monturas',descripcion:'Monturas para lentes'},
-    {codigo:'0103',nombre:'Liquido Limpiador',descripcion:'Liquido en spray para limpieza de lentes'},
-    {codigo:'0104',nombre:'Lentes de contacto',descripcion:'Lentes de contacto de colores'},
-    {codigo:'0105',nombre:'Pañuelos Microfibra',descripcion:'Pañuelos de microfibra para limpieza de lentes'},
-    {codigo:'0106',nombre:'Cordón Lentes',descripcion:'Cordón para sujecion de lentes'}
-  ]
+  recordsProductos:any[]=[]
   //listFields:string[]=['codigo','nombre','descripcion']
 
   metaDataColumns: MetaDataColumn[] = [
@@ -29,19 +23,18 @@ export class PageListComponent implements OnInit {
     {field:"descripcion", title:"Descripcion"},
   ]
   dataProductos:any[]=[]
-  totalRecords= this.recordsProductos.length
+  totalRecords= 0
 
   keypadButtons:KeypadButton[]=[
-    {icon:"cloud_download", tooltip:"Exportar", color:"accent",action:"DOWNLOAD"},
     {icon:"add", tooltip:"Agregar", color:"primary",action:"NEW"}
   ]
 
   constructor(
     private dialog:MatDialog,
     private snackBar:MatSnackBar,
-    private bottomSheet:MatBottomSheet
+    private productoService:ProductoService
   ) {
-    this.changePage(0)
+    this.loadProductos()
    }
 
   ngOnInit(): void {
@@ -54,7 +47,33 @@ export class PageListComponent implements OnInit {
   }
 
   openForm(row:any=null){
+    const options = {
+      panelClass: 'panel-container',
+      disableClose:true,
+      data:row
+    }
+    const reference: MatDialogRef<FormComponent> = this.dialog.open(FormComponent, options)
 
+    reference.afterClosed().subscribe((response) => {
+      if(!response){return}
+
+      if(response.id){
+        const producto = {...response}
+        this.productoService.updateProducto(response.id, producto).subscribe (()=>{
+          this.changePage(0)
+          location.reload()
+          this.showMessage('Registro Actualizado')
+        })
+      } else{
+        const producto = {...response}
+        this.productoService.addProducto(producto).subscribe(() =>{
+          this.changePage(0)
+          location.reload()
+          this.showMessage('Registro exitoso')
+
+        })
+      }
+    })
   }
 
   delete(id:number){
@@ -78,17 +97,22 @@ export class PageListComponent implements OnInit {
   }
   doAction(action:string){
     switch(action){
-      case 'DOWNLOAD':
-        this.showBottomSheet("Lista de Agencias","agencias",this.recordsProductos)
-        break
       case 'NEW':
         this.openForm()
         break
     }
   }
-
-  showBottomSheet(title:string, fileName:string, data:any){
-    this.bottomSheet.open(DownloadComponent)
+  loadProductos(){
+    this.productoService.loadProductos().subscribe(data => {
+      this.recordsProductos = data
+      console.log(data)
+      this.totalRecords = this.recordsProductos.length
+      this.changePage(0)
+    },error =>{
+      console.log(error)
+    })
   }
+
+
 
 }

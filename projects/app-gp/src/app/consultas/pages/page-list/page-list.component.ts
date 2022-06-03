@@ -60,7 +60,6 @@ export class PageListComponent implements OnInit {
 
   //listFields:string[]=['id','cedula','nombre','apellido','fecha','diagnostico']
   metaDataColumns: MetaDataColumn[] = [
-    {field:"_id", title:"ID"},
     {field:"cedula", title:"CEDULA"},
     {field:"nombre", title:"NOMBRE"},
     {field:"apellido", title:"APELLIDO"},
