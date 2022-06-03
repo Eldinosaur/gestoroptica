@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from 'projects/app-gp/src/environments/environment';
 import { ConfirmComponent } from '../../../shared/components/confirm/confirm.component';
-import { DownloadComponent } from '../../../shared/components/download/download.component';
 import { KeypadButton } from '../../../shared/interfaces/keybutton.interface';
 import { MetaDataColumn } from '../../../shared/interfaces/metacolumn.interface';
+import { FormComponent } from '../../components/form/form.component';
+import { PacienteService } from '../../service/paciente.service';
 
 @Component({
   selector: 'gp-page-list',
@@ -14,16 +14,11 @@ import { MetaDataColumn } from '../../../shared/interfaces/metacolumn.interface'
   styleUrls: ['./page-list.component.css']
 })
 export class PageListComponent implements OnInit {
-  recordsPacientes:any[]=[
-    {cedula:'1801',nombre:'Anahi',apellido:'Naranjo',fechanacimiento:'02-08-2000',celular:'0987',correo:'anaranjo@example.com'},
-    {cedula:'1802',nombre:'Angeles',apellido:'Lopez',fechanacimiento:'08-02-2000',celular:'0998',correo:'alopez@example.com'},
-    {cedula:'1803',nombre:'Liz',apellido:'Lop',fechanacimiento:'23-04-2001',celular:'0988',correo:'llop@example.com'},
-    {cedula:'1804',nombre:'Adriana',apellido:'Naranjo',fechanacimiento:'26-10-2009',celular:'0999',correo:'adnar@example.com'},
-    {cedula:'1805',nombre:'Nicole',apellido:'Vaca',fechanacimiento:'03-12-2003',celular:'0977',correo:'nvaca@example.com'}
-  ]
+  recordsPacientes:any[]=[]
   //listFields:string[]=['cedula','nombre','apellido','fechanacimiento','celular','correo']
 
   metaDataColumns: MetaDataColumn[] = [
+    {field:"_id", title:"ID"},
     {field:"cedula", title:"Cedula"},
     {field:"nombre", title:"Nombre"},
     {field:"apellido", title:"Apellido"},
@@ -32,19 +27,18 @@ export class PageListComponent implements OnInit {
     {field:"correo", title:"Correo Electrónico"}
   ]
   dataPacientes:any[]=[]
-  totalRecords= this.recordsPacientes.length
+  totalRecords= 0
 
   keypadButtons:KeypadButton[]=[
-    {icon:"cloud_download", tooltip:"Exportar", color:"accent",action:"DOWNLOAD"},
-    {icon:"add", tooltip:"Agregar", color:"primary",action:"NEW"}
+   {icon:"add", tooltip:"Agregar", color:"primary",action:"NEW"}
   ]
 
   constructor(
     private dialog:MatDialog,
     private snackBar:MatSnackBar,
-    private bottomSheet:MatBottomSheet
+    private pacienteService:PacienteService
   ) {
-    this.changePage(0)
+    this.loadPacientes()
    }
 
   ngOnInit(): void {
@@ -57,7 +51,33 @@ export class PageListComponent implements OnInit {
   }
 
   openForm(row:any=null){
+    const options = {
+      panelClass: 'panel-container',
+      disableClose:true,
+      data:row
+    }
+    const reference: MatDialogRef<FormComponent> = this.dialog.open(FormComponent, options)
 
+    reference.afterClosed().subscribe((response) => {
+      if(!response){return}
+
+      if(response.id){
+        const consulta = {...response}
+        this.pacienteService.updatePaciente(response.id, consulta).subscribe (()=>{
+          this.changePage(0)
+          location.reload()
+          this.showMessage('Registro Actualizado')
+        })
+      } else{
+        const paciente = {...response}
+        this.pacienteService.addPaciente(paciente).subscribe(() =>{
+          this.changePage(0)
+          location.reload()
+          this.showMessage('Registro exitoso')
+
+        })
+      }
+    })
   }
 
   delete(id:number){
@@ -65,7 +85,7 @@ export class PageListComponent implements OnInit {
       ConfirmComponent,
       {width:"320px",disableClose:true})
 
-    reference.componentInstance.message="¿Está seguro de eliminar la Consulta?"
+    reference.componentInstance.message="¿Está seguro de eliminar el paciente?"
     reference.afterClosed().subscribe((result) => {
       if(!result){return}
       const position = this.recordsPacientes.findIndex(el => el.id === id)
@@ -81,17 +101,21 @@ export class PageListComponent implements OnInit {
   }
   doAction(action:string){
     switch(action){
-      case 'DOWNLOAD':
-        this.showBottomSheet("Lista de Agencias","agencias",this.recordsPacientes)
-        break
       case 'NEW':
         this.openForm()
         break
     }
   }
-
-  showBottomSheet(title:string, fileName:string, data:any){
-    this.bottomSheet.open(DownloadComponent)
+  loadPacientes(){
+    this.pacienteService.loadPacientes().subscribe(data => {
+      this.recordsPacientes = data
+      console.log(data)
+      this.totalRecords = this.recordsPacientes.length
+      this.changePage(0)
+    },error =>{
+      console.log(error)
+    })
   }
+
 
 }
